@@ -204,33 +204,8 @@ public class Player : MonoBehaviour
   {
     if (mFiring[id] == false)
     {
-      StartCoroutine(Coroutine_Firing(id));
+      // launch firng coroutine
     }
   }
 
-  public void FireBullet()
-  {
-    if (mBulletPrefab == null) return;
-
-    Vector3 dir = -mGunTransform.right.normalized;
-    Vector3 firePoint = mGunTransform.transform.position + dir *
-        1.2f - mGunTransform.forward * 0.1f;
-    GameObject bullet = Instantiate(mBulletPrefab, firePoint,
-        Quaternion.LookRotation(dir) * Quaternion.AngleAxis(90.0f, Vector3.right));
-
-    bullet.GetComponent<Rigidbody>().AddForce(dir * mBulletSpeed, ForceMode.Impulse);
-
-    // randomize the volume.
-    audioSource.volume = Random.Range(0.4f, 0.8f);
-    audioSource.PlayOneShot(shootingSoundClip);
-  }
-
-  IEnumerator Coroutine_Firing(int id)
-  {
-    mFiring[id] = true;
-    FireBullet();
-    yield return new WaitForSeconds(1.0f / RoundsPerSecond[id]);
-    mFiring[id] = false;
-    mBulletsInMagazine -= 1;
-  }
 }
