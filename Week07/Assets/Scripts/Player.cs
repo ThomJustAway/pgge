@@ -190,7 +190,7 @@ public class Player : MonoBehaviour
 
   public void Reload()
   {
-    StartCoroutine(Coroutine_DelayReloadSound());
+    //StartCoroutine(Coroutine_DelayReloadSound());
   }
 
   IEnumerator Coroutine_DelayReloadSound(float duration = 1.0f)
