@@ -47,16 +47,27 @@ public class Player : MonoBehaviour
     [SerializeField]
     AudioClip noAmmoSoundClip;
 
+    public AudioSource mAudioSourceFiring;
+    public AudioClip mFiringSound;
+    public AudioClip mReloadSound;
+    public AudioClip mNoAmmoSound;
+
+    Dictionary<AudioClip, bool> mSoundStatus = new Dictionary<AudioClip, bool>();
 
 
     void Start()
     {
-    mFsm.Add(new PlayerState_MOVEMENT(this));
-    mFsm.Add(new PlayerState_ATTACK(this));
-    mFsm.Add(new PlayerState_RELOAD(this));
-    mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
+        mFsm.Add(new PlayerState_MOVEMENT(this));
+        mFsm.Add(new PlayerState_ATTACK(this));
+        mFsm.Add(new PlayerState_RELOAD(this));
+        mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
 
-    PlayerConstants.PlayerMask = mPlayerMask;
+
+        mSoundStatus.Add(mFiringSound, false);
+        mSoundStatus.Add(mReloadSound, false);
+        mSoundStatus.Add(mNoAmmoSound, false);
+
+        PlayerConstants.PlayerMask = mPlayerMask;
     }
 
     void Update()
@@ -140,59 +151,67 @@ public class Player : MonoBehaviour
     RaycastHit hit;
     bool flag = Physics.Raycast(gunpoint, dir,
                 out hit, 50.0f, objectsMask);
-    if (flag)
-    {
-    // Draw a line as debug to show the aim of fire in scene view.
-    Debug.DrawLine(gunpoint, gunpoint +
-        (dir * hit.distance), Color.red, 0.0f);
+        if (flag)
+        {
+            // Draw a line as debug to show the aim of fire in scene view.
+            Debug.DrawLine(gunpoint, gunpoint +
+                (dir * hit.distance), Color.red, 0.0f);
 
-    // Find the transformed intersected point to screenspace
-    // and then transform the crosshair position to this
-    // new position.
-    // first you need the RectTransform component of your mCanvas
-    RectTransform CanvasRect = mCanvas.GetComponent<RectTransform>();
+            // Find the transformed intersected point to screenspace
+            // and then transform the crosshair position to this
+            // new position.
+            // first you need the RectTransform component of your mCanvas
+            RectTransform CanvasRect = mCanvas.GetComponent<RectTransform>();
 
-    // then you calculate the position of the UI element.
-    // Remember that 0,0 for the mCanvas is at the centre of the screen. 
-    // But WorldToViewPortPoint treats the lower left corner as 0,0. 
-    // Because of this, you need to subtract the height / width 
-    // of the mCanvas * 0.5 to get the correct position.
+            // then you calculate the position of the UI element.
+            // Remember that 0,0 for the mCanvas is at the centre of the screen. 
+            // But WorldToViewPortPoint treats the lower left corner as 0,0. 
+            // Because of this, you need to subtract the height / width 
+            // of the mCanvas * 0.5 to get the correct position.
 
-    Vector2 ViewportPosition = Camera.main.WorldToViewportPoint(hit.point);
-    Vector2 WorldObject_ScreenPosition = new Vector2(
-    ((ViewportPosition.x * CanvasRect.sizeDelta.x) - (CanvasRect.sizeDelta.x * 0.5f)),
-    ((ViewportPosition.y * CanvasRect.sizeDelta.y) - (CanvasRect.sizeDelta.y * 0.5f)));
+            Vector2 ViewportPosition = Camera.main.WorldToViewportPoint(hit.point);
+            Vector2 WorldObject_ScreenPosition = new Vector2(
+            ((ViewportPosition.x * CanvasRect.sizeDelta.x) - (CanvasRect.sizeDelta.x * 0.5f)),
+            ((ViewportPosition.y * CanvasRect.sizeDelta.y) - (CanvasRect.sizeDelta.y * 0.5f)));
 
-    //now you can set the position of the UI element
-    mCrossHair.anchoredPosition = WorldObject_ScreenPosition;
+            //now you can set the position of the UI element
+            mCrossHair.anchoredPosition = WorldObject_ScreenPosition;
 
 
-    // Enable or set active the crosshair gameobject.
-    mCrossHair.gameObject.SetActive(true);
-    }
-    else
-    {
-    // Hide or set inactive the crosshair gameobject.
-    mCrossHair.gameObject.SetActive(false);
-    }
+            // Enable or set active the crosshair gameobject.
+            mCrossHair.gameObject.SetActive(true);
+        }
+        else
+        {
+            // Hide or set inactive the crosshair gameobject.
+            mCrossHair.gameObject.SetActive(false);
+        }
     }
 
 
 
     public void Move()
     {
-    mPlayerMovement.HandleInputs();
-    mPlayerMovement.Move();
+        mPlayerMovement.HandleInputs();
+        mPlayerMovement.Move();
     }
 
     public void NoAmmo()
     {
-        audioSource.PlayOneShot(noAmmoSoundClip);
+        if (mSoundStatus[mNoAmmoSound] == false)
+        {
+            StartCoroutine(Coroutine_PlayOneShot(mNoAmmoSound));
+        }
     }
 
     public void Reload()
     {
-    //StartCoroutine(Coroutine_DelayReloadSound());
+        //StartCoroutine(Coroutine_DelayReloadSound());
+        if (mSoundStatus[mReloadSound] == false)
+        {
+            StartCoroutine(Coroutine_PlayOneShot(mReloadSound));
+        }
+
     }
 
     IEnumerator Coroutine_DelayReloadSound(float duration = 1.0f)
@@ -211,6 +230,16 @@ public class Player : MonoBehaviour
         mBulletsInMagazine -= 1;
     }
 
+    IEnumerator Coroutine_PlayOneShot(AudioClip audioClip)
+    {
+        mSoundStatus[audioClip] = true;
+        mAudioSourceFiring.volume = 0.8f;
+        mAudioSourceFiring.pitch = 0.8f;
+        mAudioSourceFiring.PlayOneShot(audioClip);
+        yield return new WaitForSeconds(audioClip.length);
+        mSoundStatus[audioClip] = false;
+    }
+
 
     public void Fire(int id)
     {
@@ -218,6 +247,11 @@ public class Player : MonoBehaviour
         {
             StartCoroutine(Coroutine_Firing(id));
         }
+        if (mSoundStatus[mFiringSound] == false)
+        {
+            StartCoroutine(Coroutine_PlayOneShot(mFiringSound));
+        }
+
     }
 
     public void FireBullet()
@@ -227,6 +261,7 @@ public class Player : MonoBehaviour
         Vector3 dir = -mGunTransform.right.normalized;
         Vector3 firePoint = mGunTransform.transform.position + dir *
             1.2f - mGunTransform.forward * 0.1f;
+        //where the bullets spawn
         GameObject bullet = Instantiate(mBulletPrefab, firePoint,
             Quaternion.LookRotation(dir) * Quaternion.AngleAxis(90.0f, Vector3.right)); //change this later
 
