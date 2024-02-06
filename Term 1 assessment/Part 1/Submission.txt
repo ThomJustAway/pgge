@@ -1,0 +1,24 @@
+Submission
+
+assignment video: https://www.youtube.com/watch?v=dlSFSizRU9s
+
+
+Source:
+
+Github forked and youtube video reference:
+Youtube video found: https://www.youtube.com/watch?v=Xd4UhJufTx4&t=1s
+github repo: https://github.com/ThomJustAway/Unity-Benchmarks
+
+sources to back up why findobject by tag or type is slow:
+https://discussions.unity.com/t/how-does-findgameobjectswithtag-work/83167
+https://gamedev.stackexchange.com/questions/157709/is-gameobject-find-a-bad-idea-even-for-one-frame
+
+Why Math.sqrt is slow:
+https://stackoverflow.com/questions/22332750/why-is-square-root-such-a-slow-operation
+
+Sources that say why api are not working:
+https://forum.unity.com/threads/unity-can-we-move-away-from-silently-failing-apis-please.1246516/
+https://forum.unity.com/threads/importing-lists-of-custom-objects-from-json.1448482/#post-9081991
+
+Depricated code source:
+https://docs.unity.com/ads/manual/APIDeprecation#:~:text=If%20an%20API%20becomes%20obsolete%2C%20Unity%20Ads%20will,classes%2C%20and%20the%20projected%20end%20of%20life%20date.

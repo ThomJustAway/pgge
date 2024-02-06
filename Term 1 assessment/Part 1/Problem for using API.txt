@@ -1,0 +1,44 @@
+Problem for using API?:
+
+Problem statement: What are some API that can cause lower performance to a game?
+
+(I wont be covering this two)
+-forcing players to use Legacy version due to the lack of update
+- Some times, the Api could be failing when developers using. 
+
+- Some of the Unity API could be deprecated which mean that your code might fail at some point in time due to the lack of support.
+- some of the Unity API are very inefficient like the FindGameObjectsWithTag.
+- There are API that can Trigger Garbage collection events
+
+Types of API:
+- FindGameObjectByTag() / FindGameObjectByType()
+- SendMessage()
+- Extern Call Caching
+- Order of Operation
+- Physics.OverlapSphereNonAlloc
+
+
+Root cause of problem:
+
+- Extern calls (Going to C++ to get reference)
+
+- Use of computationally expensive methods (math.sqrt)
+
+- Trade off. having no allocated memory in exchange for lower performance.
+
+FindGameObjectsWithTag:
+- still searching but I cant find github reference of this
+
+Approach to resolve the problem:
+
+-Try to use some optimization tricks like
+
+FindGameObjectWithTag: should try to be used in the start/ awake call instead of the Update call because it is very slow.
+
+- consider the trade off the function.
+
+
+
+Conclusion:
+
+References:

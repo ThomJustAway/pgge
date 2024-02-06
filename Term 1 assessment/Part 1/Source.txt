@@ -1,0 +1,22 @@
+Submission
+
+assignment video: https://www.youtube.com/watch?v=gzBV-ByFAmg
+
+
+Source:
+
+Github forked and youtube video reference:
+Youtube video found: https://www.youtube.com/watch?v=Xd4UhJufTx4&t=1s
+github repo: https://github.com/ThomJustAway/Unity-Benchmarks
+
+sources to back up why findobject by tag or type is slow:
+https://discussions.unity.com/t/how-does-findgameobjectswithtag-work/83167
+https://gamedev.stackexchange.com/questions/157709/is-gameobject-find-a-bad-idea-even-for-one-frame
+
+Why Math.sqrt is slow:
+https://stackoverflow.com/questions/22332750/why-is-square-root-such-a-slow-operation
+
+Github from the game:
+https://github.com/UnityTechnologies/AngryBots_ECS
+https://github.com/ntcaston/AngryGL
+https://www.youtube.com/watch?v=tInaI3pU19Y
